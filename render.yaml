@@ -2,7 +2,7 @@ services:
   - type: web
     name: wed-backend
     env: node
-    buildCommand: yarn build
+    buildCommand: yarn install && yarn build
     startCommand: yarn start
     envVars:
       - key: NODE_ENV
@@ -12,4 +12,3 @@ services:
     #   sync: false
     # - key: JWT_SECRET
     #   sync: false
-
