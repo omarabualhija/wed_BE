@@ -21,7 +21,7 @@ app.use(cors());
 
 // Middleware
 app.use(helmet({ crossOriginResourcePolicy: false }));
-app.use(compression());
+app.use(compression() as any);
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -38,11 +38,11 @@ app.get("/health", (req: Request, res: Response) => {
 // Swagger documentation
 app.use(
   "/api-docs",
-  swaggerUi.serve,
+  ...(swaggerUi.serve as any),
   swaggerUi.setup(swaggerSpec, {
     customCss: ".swagger-ui .topbar { display: none }",
     customSiteTitle: "Wed API Documentation",
-  })
+  }) as any
 );
 
 // API routes

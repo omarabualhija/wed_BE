@@ -10,9 +10,11 @@ import { translateRequest } from "../utils/translations";
 
 // Generate JWT token
 const generateToken = (userId: string): string => {
-  return jwt.sign({ id: userId }, process.env.JWT_SECRET || "secret", {
-    expiresIn: process.env.JWT_EXPIRE || "7d",
-  });
+  const secret: string = process.env.JWT_SECRET || "secret";
+  const expiresIn: string = process.env.JWT_EXPIRE || "7000d";
+  return jwt.sign({ id: userId }, secret, {
+    expiresIn: expiresIn,
+  } as jwt.SignOptions);
 };
 
 // Register user
@@ -76,14 +78,14 @@ export const register = async (
 
     // Remove password from response
     const userResponse = user.toObject();
-    delete userResponse.password;
+    const { password: _, ...userResponseWithoutPassword } = userResponse;
 
     res.status(201).json({
       status: "success",
       message: translateRequest("auth.registerSuccess", req),
       data: {
         token,
-        user: userResponse,
+        user: userResponseWithoutPassword,
       },
     });
   } catch (error: any) {
@@ -192,14 +194,14 @@ export const confirmOTP = async (
 
     // Remove password from response
     const userResponse = user.toObject();
-    delete userResponse.password;
+    const { password: _, ...userResponseWithoutPassword } = userResponse;
 
     res.status(200).json({
       status: "success",
       message: translateRequest("auth.emailConfirmed", req),
       data: {
         token,
-        user: userResponse,
+        user: userResponseWithoutPassword,
       },
     });
   } catch (error: any) {
@@ -252,14 +254,14 @@ export const login = async (
 
     // Remove password from response
     const userResponse = user.toObject();
-    delete userResponse.password;
+    const { password: _, ...userResponseWithoutPassword } = userResponse;
 
     res.status(200).json({
       status: "success",
       message: translateRequest("auth.loginSuccess", req),
       data: {
         token,
-        user: userResponse,
+        user: userResponseWithoutPassword,
       },
     });
   } catch (error: any) {
@@ -318,13 +320,13 @@ export const updateProfile = async (
 
     // Remove password from response
     const userResponse = user.toObject();
-    delete userResponse.password;
+    const { password: _, ...userResponseWithoutPassword } = userResponse;
 
     res.status(200).json({
       status: "success",
       message: translateRequest("auth.profileUpdated", req),
       data: {
-        user: userResponse,
+        user: userResponseWithoutPassword,
       },
     });
   } catch (error: any) {
@@ -360,12 +362,12 @@ export const getMe = async (
 
     // Remove password from response
     const userResponse = user.toObject();
-    delete userResponse.password;
+    const { password: _, ...userResponseWithoutPassword } = userResponse;
 
     res.status(200).json({
       status: "success",
       data: {
-        user: userResponse,
+        user: userResponseWithoutPassword,
       },
     });
   } catch (error: any) {
@@ -431,7 +433,7 @@ export const adminLogin = async (
 
     // Remove password from response
     const userResponse = user.toObject();
-    delete userResponse.password;
+    const { password: _, ...userResponseWithoutPassword } = userResponse;
 
     res.status(200).json({
       success: true,

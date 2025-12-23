@@ -12,10 +12,9 @@ export const getAllUsers = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
-    const search = req.query.search as string || "";
+    const search = (req.query.search as string) || "";
     const skip = (page - 1) * limit;
 
     // Build query
@@ -116,7 +115,15 @@ export const updateUser = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const { name, relationshipType, dateOfBirth, numberOfChildren, role, isEmailConfirmed, isProfileComplete } = req.body;
+    const {
+      name,
+      relationshipType,
+      dateOfBirth,
+      numberOfChildren,
+      role,
+      isEmailConfirmed,
+      isProfileComplete,
+    } = req.body;
 
     const user = await User.findById(id);
 
@@ -131,17 +138,21 @@ export const updateUser = async (
 
     // Update fields
     if (name !== undefined) user.name = name;
-    if (relationshipType !== undefined) user.relationshipType = relationshipType;
+    if (relationshipType !== undefined)
+      user.relationshipType = relationshipType;
     if (dateOfBirth !== undefined) user.dateOfBirth = dateOfBirth;
-    if (numberOfChildren !== undefined) user.numberOfChildren = numberOfChildren;
+    if (numberOfChildren !== undefined)
+      user.numberOfChildren = numberOfChildren;
     if (role !== undefined) user.role = role;
-    if (isEmailConfirmed !== undefined) user.isEmailConfirmed = isEmailConfirmed;
-    if (isProfileComplete !== undefined) user.isProfileComplete = isProfileComplete;
+    if (isEmailConfirmed !== undefined)
+      user.isEmailConfirmed = isEmailConfirmed;
+    if (isProfileComplete !== undefined)
+      user.isProfileComplete = isProfileComplete;
 
     await user.save();
 
-    const userResponse = user.toObject();
-    delete userResponse.password;
+    const userObj = user.toObject();
+    const { password: _, ...userResponse } = userObj;
 
     res.status(200).json({
       success: true,
@@ -166,6 +177,15 @@ export const deleteUser = async (
     const { id } = req.params;
 
     // Prevent deleting yourself
+    if (!req.user) {
+      throw new AppError(
+        translateRequest("auth.tokenRequired", req),
+        401,
+        "error",
+        "auth.tokenRequired"
+      );
+    }
+
     if (req.user._id.toString() === id) {
       throw new AppError(
         translateRequest("auth.cannotDeleteSelf", req),
@@ -194,4 +214,3 @@ export const deleteUser = async (
     next(error);
   }
 };
-
