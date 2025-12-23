@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: wed-backend
+    env: node
+    buildCommand: yarn build
+    startCommand: yarn start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    # Add your other environment variables here
+    # - key: MONGODB_URI
+    #   sync: false
+    # - key: JWT_SECRET
+    #   sync: false
+
